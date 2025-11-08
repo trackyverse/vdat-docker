@@ -15,11 +15,3 @@ WORKDIR /VDAT
 
 RUN apk add wine msitools && \
   wineboot
-
-FROM rocker/r2u
-# ---- System update ----
-RUN apt-get update && apt-get upgrade -y
-
-RUN Rscript -e "install.packages('rvdat', repos = c('https://mhpob.r-universe.dev', 'https://cloud.r-project.org'))"
-# ---- call R ----- 
-CMD ["R"]
