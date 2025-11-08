@@ -21,8 +21,6 @@ FROM rocker/r2u
 RUN apt-get update && apt-get upgrade -y
 
 RUN Rscript -e "install.packages('rvdat', \
-   repos = c('https://mhpob.r-universe.dev', 'https://cloud.r-project.org'), \
-   getOption("repos"), \
-   dependencies = TRUE)"
-   # ---- Default entrypoint ----
+   repos = c('https://mhpob.r-universe.dev', 'https://cloud.r-project.org'))""
+# ---- call R ----- 
 CMD ["R"]
