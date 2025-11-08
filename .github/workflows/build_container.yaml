@@ -3,7 +3,6 @@ on:
   push: 
     branches: 
       - main
-      - add-rvdat
     paths:
       - 'Dockerfile'
   workflow_dispatch:
