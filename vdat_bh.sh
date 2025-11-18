@@ -11,6 +11,52 @@ VDAT_DIR="$HOME/vdat"
 if [[ ! -d "$VDAT_DIR" ]]; then
   mkdir -p "$VDAT_DIR"
 fi
+# !/bin/bash
+
+if [[ -e $1 && $1 =~ .*\.msi$ ]]; then
+  echo "Extracting $1"
+
+  # create a temporary directory and delete on exit
+  VDAT_TEMP_DIR=$(mktemp -d)
+  trap 'rm -rf "$VDAT_TEMP_DIR"' EXIT
+
+  # copy the Fathom Connect installer to the temp directory
+  cp $1 $VDAT_TEMP_DIR/fathom_connect.msi
+
+  # Pull out vdat.exe from the Fathom Connect installer
+  ## --rm -> remove container after run
+  ## -v -> mount temporary directory to /VDAT in container
+  ## ghcr.io/trackyverse/vdat sh -c -> run the following commands in a shell
+  ##    within the container
+  ## msiextract fathom_connect.msi > /dev/null -> extract the .msi file and 
+  ##    suppress output
+  ## mv Innovasea/Fathom\ Connect/vdat.exe /VDAT/vdat.exe -> move the extracted
+  ##    vdat.exe file to the mounted directory
+
+  docker run --rm \
+    -v $VDAT_TEMP_DIR:/VDAT \
+    ghcr.io/trackyverse/vdat sh -c \
+      "msiextract fathom_connect.msi > /dev/null; \
+      mv Innovasea/Fathom\ Connect/vdat.exe /VDAT/vdat.exe;
+      rm -rf Innovasea"
+
+  # copy vdat.exe to current directory
+  # cp $VDAT_TEMP_DIR/vdat.exe .
+  cp "$VDAT_TEMP_DIR/vdat.exe" "$VDAT_DIR/"
+
+  # clean up temporary directory
+  rm -rf $VDAT_TEMP_DIR
+
+  # echo "vdat.exe extracted to $PWD"
+  echo "vdat.exe copied to $VDAT_DIR"
+# If the first argument is not an MSI, run vdat.exe with Wine 
+else
+
+  # Check that vdat.exe exists in the current directory
+  if [[ ! -e "$VDAT_DIR/vdat.exe" ]]; then
+    echo -e "vdat.exe not found in current directory."
+    exit 1
+  fi
 # get the full path to vdat 
 VDAT_FULL_PATH="$(cd "$VDAT_DIR" && pwd)/vdat.exe"
 
@@ -69,3 +115,4 @@ docker run --rm \
   ghcr.io/trackyverse/vdat \
   sh -c "echo 'Listing /input:'; ls -l /input; echo 'Running:'; echo $VDAT_CMD; $VDAT_CMD"
 
+fi
