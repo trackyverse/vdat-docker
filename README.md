@@ -1,4 +1,4 @@
-# Innovasea's VDAT and trackyverse R packages on Linux
+# Innovasea's VDAT and trackyverse R packages on macOS and Linux
 
 The helper file contained within this repository (`vdat.sh`) aims to provide access to Innovasea's VDAT executable via a Docker container. This allows users to run VDAT on macOS and Linux systems, where it is not natively supported.
 
